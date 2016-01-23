@@ -1,20 +1,37 @@
 var Jimp = require("jimp");
 
 // open a file called "image1.jpg"
+var redAvg = 0;
+var greenAvg = 0;
+var blueAvg = 0;
 
-var avg = "";
-Jimp.read("image1.jpg", function (err, image1) {
+Jimp.read("red.jpg", function (err, red) {
 	if (err) throw err;
-	console.log(image1);
-	for (var i = 0; i <= image1.bitmap.width - 1; i++) {
-		var widthColor = image1.getPixelColor(i, 0);
-		avg = (avg + widthColor)/(i + 2);
+	console.log(red);
+	red.scan(0, 0, red.bitmap.width, red.bitmap.height, function(x, y, idx) {
+
+		redAvg += red.bitmap.data[ idx + 0 ];
+		redAvg = redAvg / 2;
+		greenAvg += red.bitmap.data[ idx + 1 ];
+		greenAvg = greenAvg / 2;
+		blueAvg += red.bitmap.data[ idx + 2 ];
+		blueAvg = blueAvg / 2;
+
+	});
+	console.log(redAvg, greenAvg, blueAvg);
+
+	function componentToHex(c) {
+	    var hex = c.toString(16);
+	    return hex.length == 1 ? "0" + hex : hex;
 	}
 
-	for (var j = 0; j <= image1.bitmap.height - 1; j++) {
-		var heightColor = image1.getPixelColor(0, j);
-		avg = (avg + heightColor)/(j + 2);
+	function rgbToHex(r, g, b) {
+	    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 	}
-	avg = parseInt(avg, 16).toString();
-	console.log(avg);
+
+	console.log(rgbToHex(redAvg, greenAvg, blueAvg))
+	// average = average.toString(16).slice(0,6);
+	// console.log(average);
 });
+
+// pull out r,g,b each time, convert to hex
